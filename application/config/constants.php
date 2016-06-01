@@ -90,3 +90,4 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
 define('API_KEY', 'AIzaSyAFFfYlUSwwJy4HYX6siYgSJo70-TGE8yk');
 define('MAP_RADIUS', '50');
 define('MAP_API_URL', 'https://maps.googleapis.com/maps/api/place/textsearch/json?radius=%s&key=%s&query=%s');
+define('CACHE_TIME', 3600);
