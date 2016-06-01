@@ -20,8 +20,17 @@ class HomeController extends CI_Controller
 
     public function search()
     {
+        $this->load->driver('cache');
+
         $placeName = str_replace(' ', '+', $this->input->post('place_name'));
-        $result = $this->googleAPIProxy->getSearchPlaceResult($placeName);
+        $placeNameAPIKey = sprintf('GoogleAPI-%s', $placeName);
+
+        $result = $this->cache->file->get($placeNameAPIKey);
+
+        if (!$result) {
+            $result = $this->googleAPIProxy->getSearchPlaceResult($placeName);
+            $this->cache->file->save($placeNameAPIKey, $result, CACHE_TIME);
+        }
 
         $data = [
             'search' => true,
