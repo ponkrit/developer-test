@@ -8,7 +8,6 @@ class googleAPIProxy
      */
     public function getSearchPlaceResult($placeName)
     {
-        $placeName = str_replace(' ', '+', $placeName);
         $apiURL = sprintf(MAP_API_URL, MAP_RADIUS, API_KEY, $placeName);
         $postData = [];
 

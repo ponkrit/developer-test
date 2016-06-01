@@ -20,7 +20,7 @@ class HomeController extends CI_Controller
 
     public function search()
     {
-        $placeName = $this->input->post('place_name');
+        $placeName = str_replace(' ', '+', $this->input->post('place_name'));
         $result = $this->googleAPIProxy->getSearchPlaceResult($placeName);
 
         $data = [
