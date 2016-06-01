@@ -74,12 +74,12 @@ $active_group = 'default';
 $query_builder = TRUE;
 
 $db['default'] = array(
-	'dsn'	=> 'mysql:host=localhost;dbname=developer_test',
-	'hostname' => '',
-	'username' => 'root',
-	'password' => 'root',
+	'dsn'	=> '',
+	'hostname' => 'localhost',
+	'username' => '',
+	'password' => '',
 	'database' => '',
-	'dbdriver' => 'pdo',
+	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
 	'db_debug' => (ENVIRONMENT !== 'production'),
