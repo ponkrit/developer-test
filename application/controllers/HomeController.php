@@ -6,6 +6,7 @@ class HomeController extends CI_Controller
     {
         parent::__construct();
         $this->load->library('googleAPIProxy');
+        $this->load->library('twitterAPIProxy');
     }
 
     public function index()
@@ -22,11 +23,33 @@ class HomeController extends CI_Controller
     {
         $this->load->driver('cache');
 
-        $cacheExpire = 0;
         $cityName = str_replace(' ', '+', $this->input->post('city_name'));
-        $cityNameAPIKey = sprintf('GoogleAPI-%s', $cityName);
-
         $cacheInfo = $this->cache->file->cache_info();
+
+        $mapResult = $this->__getMapResult($cityName, $cacheInfo);
+        $twitterResult = $this->__getTweetResult($cityName, $cacheInfo);
+
+        $data = [
+            'search' => true,
+            'cityName' => $cityName,
+            'searchResult' =>  json_decode($mapResult),
+            'tweetResult' =>  json_decode($twitterResult),
+        ];
+
+        $this->load->view('templates/header');
+        $this->load->view('index', $data);
+        $this->load->view('templates/footer');
+    }
+
+    /**
+     * @param string $cityName
+     * @param array $cacheInfo
+     * @return string
+     */
+    private function __getMapResult($cityName, $cacheInfo)
+    {
+        $cacheExpire = 0;
+        $cityNameAPIKey = sprintf(MAP_CACHE_FILENAME, $cityName);
 
         if(isset($cacheInfo[$cityNameAPIKey]))
             $cacheExpire = $cacheInfo[$cityNameAPIKey]['date'] + (CACHE_TIME * 1000);
@@ -41,14 +64,38 @@ class HomeController extends CI_Controller
             $this->cache->file->save($cityNameAPIKey, $mapResult, CACHE_TIME);
         }
 
-        $data = [
-            'search' => true,
-            'cityName' => $cityName,
-            'searchResult' =>  json_decode($mapResult),
-        ];
+        return $mapResult;
+    }
 
-        $this->load->view('templates/header');
-        $this->load->view('index', $data);
-        $this->load->view('templates/footer');
+    /**
+     * @param string $cityName
+     * @param array $cacheInfo
+     * @return string
+     */
+    private function __getTweetResult($cityName, $cacheInfo)
+    {
+        $cacheExpire = 0;
+        $twitterCityNameAPIKey = sprintf(TWITTER_CACHE_FILENAME, $cityName);
+
+        if(isset($cacheInfo[$twitterCityNameAPIKey]))
+            $cacheExpire = $cacheInfo[$twitterCityNameAPIKey]['date'] + (CACHE_TIME * 1000);
+
+        if ($cacheExpire <= time())
+            $this->cache->file->delete($twitterCityNameAPIKey);
+
+        $twitterResult = $this->cache->file->get($twitterCityNameAPIKey);
+
+        if (!$twitterResult) {
+            $requestMethod = 'GET';
+            $getfield = sprintf(TWITTER_API_GET_FIELDS, $cityName);
+
+            $twitterResult = $this->twitterAPIProxy->setGetfield($getfield)
+                ->buildOauth(TWITTER_API_URL, $requestMethod)
+                ->performRequest();
+
+            $this->cache->file->save($twitterCityNameAPIKey, $twitterResult, CACHE_TIME);
+        }
+
+        return $twitterResult;
     }
 }
