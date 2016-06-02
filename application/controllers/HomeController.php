@@ -22,20 +22,29 @@ class HomeController extends CI_Controller
     {
         $this->load->driver('cache');
 
+        $cacheExpire = 0;
         $cityName = str_replace(' ', '+', $this->input->post('city_name'));
         $cityNameAPIKey = sprintf('GoogleAPI-%s', $cityName);
 
-        $result = $this->cache->file->get($cityNameAPIKey);
+        $cacheInfo = $this->cache->file->cache_info();
 
-        if (!$result) {
-            $result = $this->googleAPIProxy->getSearchPlaceResult($cityName);
-            $this->cache->file->save($cityNameAPIKey, $result, CACHE_TIME);
+        if(isset($cacheInfo[$cityNameAPIKey]))
+            $cacheExpire = $cacheInfo[$cityNameAPIKey]['date'] + (CACHE_TIME * 1000);
+
+        if ($cacheExpire <= time())
+            $this->cache->file->delete($cityNameAPIKey);
+
+        $mapResult = $this->cache->file->get($cityNameAPIKey);
+
+        if (!$mapResult) {
+            $mapResult = $this->googleAPIProxy->getSearchPlaceResult($cityName);
+            $this->cache->file->save($cityNameAPIKey, $mapResult, CACHE_TIME);
         }
 
         $data = [
             'search' => true,
             'cityName' => $cityName,
-            'searchResult' =>  json_decode($result),
+            'searchResult' =>  json_decode($mapResult),
         ];
 
         $this->load->view('templates/header');
