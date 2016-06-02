@@ -22,19 +22,19 @@ class HomeController extends CI_Controller
     {
         $this->load->driver('cache');
 
-        $placeName = str_replace(' ', '+', $this->input->post('place_name'));
-        $placeNameAPIKey = sprintf('GoogleAPI-%s', $placeName);
+        $cityName = str_replace(' ', '+', $this->input->post('place_name'));
+        $cityNameAPIKey = sprintf('GoogleAPI-%s', $cityName);
 
-        $result = $this->cache->file->get($placeNameAPIKey);
+        $result = $this->cache->file->get($cityNameAPIKey);
 
         if (!$result) {
-            $result = $this->googleAPIProxy->getSearchPlaceResult($placeName);
-            $this->cache->file->save($placeNameAPIKey, $result, CACHE_TIME);
+            $result = $this->googleAPIProxy->getSearchPlaceResult($cityName);
+            $this->cache->file->save($cityNameAPIKey, $result, CACHE_TIME);
         }
 
         $data = [
             'search' => true,
-            'placeName' => $placeName,
+            'cityName' => $cityName,
             'searchResult' =>  json_decode($result),
         ];
 

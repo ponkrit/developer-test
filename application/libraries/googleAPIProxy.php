@@ -3,12 +3,12 @@
 class googleAPIProxy
 {
     /**
-     * @param string $placeName
+     * @param string $cityName
      * @return string
      */
-    public function getSearchPlaceResult($placeName)
+    public function getSearchPlaceResult($cityName)
     {
-        $apiURL = sprintf(MAP_API_URL, MAP_RADIUS, API_KEY, $placeName);
+        $apiURL = sprintf(MAP_API_URL, API_KEY, $cityName);
         $postData = [];
 
         return $this->__getData($apiURL, $postData);
