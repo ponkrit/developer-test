@@ -3,7 +3,7 @@
     <?php
     if ($search == true) {
     ?>
-    <h1><?=$placeName?></h1>
+    <h1><?=$cityName?></h1>
     <div id="map" style="height: 500px;"></div>
 
     <script>
@@ -63,7 +63,7 @@
     <div class="col-sm-12">
         <form class="form-horizontal" action="search" method="post">
             <div class="col-sm-11">
-                <input class="form-control pull-left" name="place_name" placeholder="Place Name">
+                <input class="form-control pull-left" name="city_name" placeholder="City Name" value="<?=(isset($cityName)) ? $cityName : ''?>" required>
             </div>
             <div class="col-sm-1">
                 <input type="submit" class="btn btn-sm btn-primary pull-left" value="Search">
