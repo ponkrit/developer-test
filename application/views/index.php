@@ -1,6 +1,7 @@
 <div class="jumbotron" style="border-radius: 0 0 6px 6px;">
 
     <?php
+
     if ($search == true) {
     ?>
     <h1><?=$cityName?></h1>
@@ -9,18 +10,22 @@
     <script>
         <?php
 
-        if (count($searchResult->results) > 0) {
+        if (count($searchResult->results) > 0 && count($twitterResult->statuses) > 0) {
         ?>
         var searchResult = [
             <?php
-                for ($num = 0; $num < count($searchResult->results); $num++) {
+            $mapPoint = '';
 
-                    $result = $searchResult->results[$num];
-                    echo '["'.htmlspecialchars($result->name).'", '.$result->geometry->location->lat.', '.$result->geometry->location->lng.', '.$num.']';
+            for ($num = 0; $num < count($twitterResult->statuses); $num++) {
 
-                    if ($num < count($searchResult->results) - 1)
-                        echo ',';
-                }
+                $tweet = $twitterResult->statuses[$num];
+
+                if ($tweet->coordinates != '')
+                    $mapPoint .= '["'.htmlspecialchars($tweet->place->name).'", '.$tweet->coordinates->coordinates[0].', '.$tweet->coordinates->coordinates[1].', '.$num.'],';
+            }
+
+            echo substr($mapPoint, 0, -1);
+
             ?>
         ];
         var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -58,6 +63,7 @@
     </script>
     <?php
     }
+
     ?>
 
     <div class="col-sm-12">
