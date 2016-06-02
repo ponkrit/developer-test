@@ -58,7 +58,10 @@ $autoload['packages'] = array();
 |
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
-$autoload['libraries'] = array('googleAPIProxy' => 'googleAPIProxy');
+$autoload['libraries'] = array(
+    'googleAPIProxy' => 'googleAPIProxy',
+    'twitterAPIProxy' => 'twitterAPIProxy'
+);
 
 /*
 | -------------------------------------------------------------------
