@@ -22,7 +22,7 @@ class HomeController extends CI_Controller
     {
         $this->load->driver('cache');
 
-        $cityName = str_replace(' ', '+', $this->input->post('place_name'));
+        $cityName = str_replace(' ', '+', $this->input->post('city_name'));
         $cityNameAPIKey = sprintf('GoogleAPI-%s', $cityName);
 
         $result = $this->cache->file->get($cityNameAPIKey);
