@@ -87,7 +87,7 @@ class HomeController extends CI_Controller
 
         if (!$twitterResult) {
             $requestMethod = 'GET';
-            $getfield = sprintf(TWITTER_API_GET_FIELDS, $cityName);
+            $getfield = sprintf(TWITTER_API_GET_FIELDS, $cityName, MAX_TWEET);
 
             $twitterResult = $this->twitterAPIProxy->setGetfield($getfield)
                 ->buildOauth(TWITTER_API_URL, $requestMethod)
