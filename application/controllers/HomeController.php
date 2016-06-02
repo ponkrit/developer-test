@@ -27,13 +27,15 @@ class HomeController extends CI_Controller
         $cacheInfo = $this->cache->file->cache_info();
 
         $mapResult = $this->__getMapResult($cityName, $cacheInfo);
-        $twitterResult = $this->__getTweetResult($cityName, $cacheInfo);
+        $mapResult = json_decode($mapResult);
+        $twitterResult = $this->__getTweetResult($cityName, $cacheInfo, $mapResult->results[0]->geometry->location);
+        $twitterResult = json_decode($twitterResult);
 
         $data = [
             'search' => true,
             'cityName' => $cityName,
-            'searchResult' =>  json_decode($mapResult),
-            'tweetResult' =>  json_decode($twitterResult),
+            'searchResult' =>  $mapResult,
+            'twitterResult' =>  $twitterResult,
         ];
 
         $this->load->view('templates/header');
@@ -70,9 +72,10 @@ class HomeController extends CI_Controller
     /**
      * @param string $cityName
      * @param array $cacheInfo
+     * @param object $mapResult
      * @return string
      */
-    private function __getTweetResult($cityName, $cacheInfo)
+    private function __getTweetResult($cityName, $cacheInfo, $location)
     {
         $cacheExpire = 0;
         $twitterCityNameAPIKey = sprintf(TWITTER_CACHE_FILENAME, $cityName);
@@ -87,7 +90,8 @@ class HomeController extends CI_Controller
 
         if (!$twitterResult) {
             $requestMethod = 'GET';
-            $getfield = sprintf(TWITTER_API_GET_FIELDS, $cityName, MAX_TWEET);
+            $getfield = sprintf(TWITTER_API_GET_FIELDS, $cityName, MAX_TWEET, $location->lat, $location->lng, MAP_RADIUS);
+            $getfield = str_replace('#', '%23', $getfield);
 
             $twitterResult = $this->twitterAPIProxy->setGetfield($getfield)
                 ->buildOauth(TWITTER_API_URL, $requestMethod)
